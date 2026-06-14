@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+      name="description"
+      content="omega-EVA is a latent interactive world model that lets an embodied policy envision, verify, and refine an action before execution."
+    >
+    <meta name="theme-color" content="#071d49">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="omega-EVA: Envision, Verify, and Act">
+    <meta
+      property="og:description"
+      content="A latent interactive world model for proposal-conditioned consequence reasoning in embodied action generation."
+    >
+    <meta property="og:image" content="./assets/architecture/omega-eva-overview.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <title>omega-EVA | Envision, Verify, and Act</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./script.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <header class="site-header" data-header>
+      <div class="nav-shell">
+        <a class="wordmark" href="#top" aria-label="omega-EVA home">
+          <span class="wordmark-symbol" aria-hidden="true">ω</span>
+          <span>omega-EVA</span>
+        </a>
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          data-nav-toggle
+        >
+          <span class="sr-only">Toggle navigation</span>
+          <span></span><span></span>
+        </button>
+        <nav id="site-nav" class="site-nav" aria-label="Main navigation" data-nav>
+          <a href="#approach">Approach</a>
+          <a href="#results">Results</a>
+          <a href="#diagnostics">Diagnostics</a>
+          <a href="#citation">Citation</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section id="top" class="hero">
+        <div class="hero-orbit hero-orbit-one" aria-hidden="true"></div>
+        <div class="hero-orbit hero-orbit-two" aria-hidden="true"></div>
+        <div class="section-shell hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">Latent Interactive World Models</p>
+            <h1><span class="omega">ω</span>-EVA</h1>
+            <p class="hero-title">Envision, Verify, and Act with Latent Interactive World Models</p>
+            <p class="authors">
+              <a href="https://arxiv.org/search/cs?searchtype=author&amp;query=Sun,+Z" target="_blank" rel="noreferrer">Zhenguo Sun</a><sup>*</sup>,
+              <a href="https://arxiv.org/search/cs?searchtype=author&amp;query=Sun,+Y" target="_blank" rel="noreferrer">Yu Sun</a><sup>*†</sup>,
+              Hande Huang, and Alois Knoll
+            </p>
+            <p class="author-note"><sup>*</sup>Equal contribution. <sup>†</sup>Project lead.</p>
+
+            <div class="hero-actions" aria-label="Project resources">
+              <a class="button button-primary" href="https://arxiv.org/abs/2606.09457" target="_blank" rel="noreferrer">
+                <span class="button-icon" aria-hidden="true">↗</span>
+                Paper
+              </a>
+              <button class="button button-muted" type="button" disabled>
+                <span class="button-icon" aria-hidden="true">&lt;/&gt;</span>
+                Code <span class="button-status">Coming Soon</span>
+              </button>
+              <button class="button button-muted" type="button" disabled>
+                <span class="button-icon" aria-hidden="true">◇</span>
+                Dataset <span class="button-status">Coming Soon</span>
+              </button>
+            </div>
+
+            <div class="affiliations" aria-label="Affiliations">
+              <div class="affiliation affiliation-xyz">
+                <img src="./assets/brand/xyz-embodied-ai.png" alt="XYZ Embodied AI">
+              </div>
+              <div class="affiliation affiliation-tum">
+                <span class="tum-mark" aria-hidden="true">TUM</span>
+                <span>Technical University<br>of Munich</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-visual" aria-label="Envision Verify Act loop">
+            <div class="loop-ring">
+              <div class="loop-core">
+                <span>Latent</span>
+                <strong>Consequence</strong>
+              </div>
+              <div class="loop-node loop-node-one"><span>01</span><strong>Propose</strong></div>
+              <div class="loop-node loop-node-two"><span>02</span><strong>Envision</strong></div>
+              <div class="loop-node loop-node-three"><span>03</span><strong>Verify</strong></div>
+              <div class="loop-node loop-node-four"><span>04</span><strong>Act</strong></div>
+            </div>
+            <p>Reason about what an action will cause before committing it to the robot.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="abstract-section">
+        <div class="section-shell narrow-shell">
+          <div class="section-heading centered-heading">
+            <p class="eyebrow">The Core Idea</p>
+            <h2>A policy should inspect its imagined consequence before it acts.</h2>
+          </div>
+          <p class="abstract">
+            Embodied policies usually map the current observation directly to an action, leaving
+            candidate-action consequences implicit. <strong>ω-EVA</strong> closes this gap with an
+            Envision–Verify–Act loop: a policy proposes an action chunk, an action-conditioned latent
+            world model predicts the future induced by that proposal, and a tri-branch refiner jointly
+            reasons over the current state, imagined future, and proposed action. Consequence reasoning
+            remains in feature space, so no future video is generated during inference.
+          </p>
+        </div>
+      </section>
+
+      <section id="approach" class="section section-tinted">
+        <div class="section-shell">
+          <div class="section-heading split-heading">
+            <div>
+              <p class="eyebrow">Envision · Verify · Act</p>
+              <h2>The world model becomes an action-feedback module.</h2>
+            </div>
+            <p>
+              Rather than serving only as a training objective or passive predictor, the world model
+              interacts with the policy's own proposal inside a single control decision.
+            </p>
+          </div>
+
+          <div class="principle-grid">
+            <article class="principle-card">
+              <span class="principle-number">01</span>
+              <h3>Propose</h3>
+              <p>A language-conditioned flow policy generates an initial action chunk from dynamics-aware visual features.</p>
+            </article>
+            <article class="principle-card">
+              <span class="principle-number">02</span>
+              <h3>Envision</h3>
+              <p>The proposal is fed back into the latent world model to predict its action-conditioned future.</p>
+            </article>
+            <article class="principle-card">
+              <span class="principle-number">03</span>
+              <h3>Verify</h3>
+              <p>A tri-branch refiner compares the present, predicted consequence, and proposal to rewrite the action.</p>
+            </article>
+            <article class="principle-card">
+              <span class="principle-number">04</span>
+              <h3>Act</h3>
+              <p>The refined action is executed, then the loop restarts from the next observation.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section architecture-section">
+        <div class="section-shell">
+          <div class="section-heading centered-heading">
+            <p class="eyebrow">Three-Stage Framework</p>
+            <h2>Learn dynamics, generate a proposal, then close the loop.</h2>
+          </div>
+          <figure class="architecture-figure">
+            <img
+              src="./assets/architecture/omega-eva-overview.png"
+              alt="Overview of the omega-EVA three-stage architecture and Envision Verify Act loop"
+              loading="lazy"
+            >
+            <figcaption>
+              Stage 1 learns action-conditioned latent dynamics. Stage 2 trains a world-aware flow
+              policy. Stage 3 feeds the policy's proposal back through the frozen world model and
+              refines it from the imagined consequence.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section demo-section">
+        <div class="section-shell">
+          <div class="section-heading split-heading light-heading">
+            <div>
+              <p class="eyebrow">Interactive Consequence Reasoning</p>
+              <h2>Refinement changes both the action and the future it induces.</h2>
+            </div>
+            <p>
+              The same scene is shown for the Stage 2 proposal and the Stage 3 refined action.
+              The imagined futures visualize latent predictions through a diagnostic decoder.
+            </p>
+          </div>
+
+          <div class="comparison-grid">
+            <article class="comparison-column">
+              <div class="comparison-label"><span>Stage 2</span> Proposal policy</div>
+              <div class="media-pair">
+                <figure>
+                  <img src="./assets/demos/stage2-action-rollout.gif" alt="Stage 2 action rollout" loading="lazy">
+                  <figcaption>Action rollout</figcaption>
+                </figure>
+                <figure>
+                  <img src="./assets/demos/stage2-imagined-future.gif" alt="Stage 2 imagined future" loading="lazy">
+                  <figcaption>Imagined future</figcaption>
+                </figure>
+              </div>
+            </article>
+            <div class="comparison-arrow" aria-hidden="true">
+              <span>verify</span>
+              <strong>→</strong>
+            </div>
+            <article class="comparison-column comparison-highlight">
+              <div class="comparison-label"><span>Stage 3</span> Envision–Verify–Act</div>
+              <div class="media-pair">
+                <figure>
+                  <img src="./assets/demos/stage3-action-rollout.gif" alt="Stage 3 refined action rollout" loading="lazy">
+                  <figcaption>Refined rollout</figcaption>
+                </figure>
+                <figure>
+                  <img src="./assets/demos/stage3-imagined-future.gif" alt="Stage 3 imagined future" loading="lazy">
+                  <figcaption>Refined future</figcaption>
+                </figure>
+              </div>
+            </article>
+          </div>
+          <p class="media-note">
+            Diagnostic visualizations only. ω-EVA performs consequence reasoning in latent feature
+            space and does not decode videos during policy inference.
+          </p>
+        </div>
+      </section>
+
+      <section id="results" class="section results-section">
+        <div class="section-shell">
+          <div class="section-heading split-heading">
+            <div>
+              <p class="eyebrow">Experimental Results</p>
+              <h2>Compact, competitive, and consistently improved by Stage 3.</h2>
+            </div>
+            <p>
+              Evaluated across single-arm, bimanual, long-horizon, and perturbed simulation settings,
+              with no additional robot-data pretraining.
+            </p>
+          </div>
+
+          <div class="metric-grid">
+            <article class="metric-card metric-primary">
+              <p>LIBERO</p>
+              <strong>98.6<span>%</span></strong>
+              <div class="metric-delta"><span>97.9</span><b>+0.7</b> Stage 3</div>
+            </article>
+            <article class="metric-card">
+              <p>LIBERO-PLUS</p>
+              <strong>83.4<span>%</span></strong>
+              <div class="metric-delta"><span>81.2</span><b>+2.2</b> benchmark training</div>
+            </article>
+            <article class="metric-card">
+              <p>RoboTwin 2.0</p>
+              <strong>90.3<span>%</span></strong>
+              <div class="metric-delta"><span>88.9</span><b>+1.4</b> Stage 3</div>
+            </article>
+            <article class="metric-card model-card">
+              <p>Core model scale</p>
+              <strong>≈1.2<span>B</span></strong>
+              <div class="metric-delta"><b>0</b> robot-data pretraining</div>
+            </article>
+          </div>
+
+          <div class="result-table-wrap">
+            <div class="table-heading">
+              <h3>Stage 2 → Stage 3 across benchmarks</h3>
+              <p>Task success rate (%). Higher is better.</p>
+            </div>
+            <div class="table-scroll" tabindex="0">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Benchmark</th>
+                    <th scope="col">Training setting</th>
+                    <th scope="col">Stage 2</th>
+                    <th scope="col">Stage 3</th>
+                    <th scope="col">Gain</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">LIBERO</th>
+                    <td>Benchmark data</td>
+                    <td>97.9</td>
+                    <td><strong>98.6</strong></td>
+                    <td class="gain">+0.7</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">LIBERO-PLUS</th>
+                    <td>Zero-shot from LIBERO</td>
+                    <td>71.3</td>
+                    <td><strong>72.2</strong></td>
+                    <td class="gain">+0.9</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">LIBERO-PLUS</th>
+                    <td>Benchmark data</td>
+                    <td>81.2</td>
+                    <td><strong>83.4</strong></td>
+                    <td class="gain">+2.2</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">RoboTwin 2.0</th>
+                    <td>Benchmark data</td>
+                    <td>88.9</td>
+                    <td><strong>90.3</strong></td>
+                    <td class="gain">+1.4</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="diagnostics" class="section section-tinted diagnostics-section">
+        <div class="section-shell">
+          <div class="section-heading centered-heading">
+            <p class="eyebrow">Representation Diagnostics</p>
+            <h2>Future prediction focuses visual features on interaction.</h2>
+            <p>
+              Dynamics-aware features shift activation toward the end effector, manipulated object,
+              and nearby regions whose relationships can change under action.
+            </p>
+          </div>
+          <div class="image-sequence heatmap-sequence">
+            <figure>
+              <img src="./assets/diagnostics/current-observation.png" alt="Current robot observation" loading="lazy">
+              <figcaption><span>01</span>Current observation</figcaption>
+            </figure>
+            <figure>
+              <img src="./assets/diagnostics/dinov3-activation.png" alt="DINOv3 activation heatmap" loading="lazy">
+              <figcaption><span>02</span>Frozen DINOv3</figcaption>
+            </figure>
+            <figure>
+              <img src="./assets/diagnostics/stage1-activation.png" alt="Stage 1 activation heatmap" loading="lazy">
+              <figcaption><span>03</span>Stage 1 c<sub>t</sub></figcaption>
+            </figure>
+            <figure>
+              <img src="./assets/diagnostics/stage2-activation.png" alt="Stage 2 activation heatmap" loading="lazy">
+              <figcaption><span>04</span>Co-trained c<sub>t</sub></figcaption>
+            </figure>
+          </div>
+          <div class="diagnostic-facts">
+            <div>
+              <strong>92.1 → 97.9</strong>
+              <span>Average LIBERO success from raw DINOv3 features to co-trained c<sub>t</sub>.</span>
+            </div>
+            <div>
+              <strong>Δ = 0</strong>
+              <span>Current representation remains identical under expert, dummy, random, and shuffled actions.</span>
+            </div>
+            <div>
+              <strong>Action-conditioned</strong>
+              <span>Only the future branch observes the candidate action by design.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section fidelity-section">
+        <div class="section-shell">
+          <div class="section-heading split-heading">
+            <div>
+              <p class="eyebrow">Latent Future Fidelity</p>
+              <h2>The refined action imagines a future closer to the target.</h2>
+            </div>
+            <p>
+              A single diagnostic decoder makes predicted DINOv3 futures observable. It is used only
+              for analysis, never for policy training or inference.
+            </p>
+          </div>
+
+          <div class="image-sequence fidelity-sequence">
+            <figure>
+              <img src="./assets/diagnostics/latent-current.png" alt="Current observation" loading="lazy">
+              <figcaption>Current</figcaption>
+            </figure>
+            <figure>
+              <img src="./assets/diagnostics/latent-future-ground-truth.png" alt="Ground truth future" loading="lazy">
+              <figcaption>Raw GT future</figcaption>
+            </figure>
+            <figure>
+              <img src="./assets/diagnostics/latent-future-decoded.png" alt="Decoded ground truth future" loading="lazy">
+              <figcaption>Decoded GT</figcaption>
+            </figure>
+            <figure>
+              <img src="./assets/diagnostics/latent-future-gt-action.png" alt="Ground truth action imagination" loading="lazy">
+              <figcaption>GT-action imagination</figcaption>
+            </figure>
+            <figure>
+              <img src="./assets/diagnostics/latent-future-stage2.png" alt="Stage 2 proposal imagined future" loading="lazy">
+              <figcaption>Stage 2 proposal</figcaption>
+            </figure>
+            <figure class="fidelity-best">
+              <img src="./assets/diagnostics/latent-future-stage3.png" alt="Stage 3 refined action imagined future" loading="lazy">
+              <figcaption>Stage 3 refined</figcaption>
+            </figure>
+          </div>
+
+          <div class="fidelity-metrics">
+            <article>
+              <p>Paired structural fidelity</p>
+              <strong>SSIM <span>0.9520</span> → 0.9562</strong>
+              <small>Refined-action futures align more closely with the paired target.</small>
+            </article>
+            <article>
+              <p>Set-level distribution</p>
+              <strong>FID <span>7.41</span> → 7.40</strong>
+              <small>Distributional fidelity is preserved with a slight improvement.</small>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section ablation-section">
+        <div class="section-shell ablation-grid">
+          <div>
+            <div class="section-heading">
+              <p class="eyebrow">Mechanism Ablation</p>
+              <h2>Future feedback and proposal anchoring are both necessary.</h2>
+              <p>
+                The imagined consequence supplies feedback. The proposal identifies the action that
+                must be corrected. Removing either branch falls below the complete Stage 3 model.
+              </p>
+            </div>
+            <div class="ablation-legend">
+              <span><i class="legend-current"></i>Current</span>
+              <span><i class="legend-future"></i>Future</span>
+              <span><i class="legend-proposal"></i>Proposal</span>
+            </div>
+          </div>
+          <div class="ablation-chart" role="img" aria-label="Stage 3 branch ablation results: full Stage 3 98.6, without imagined future 97.2, without action proposal 96.0">
+            <div class="bar-group">
+              <div class="bar-value">98.6</div>
+              <div class="bar-track"><div class="bar" style="--bar-height: 86%"></div></div>
+              <div class="branch-dots"><i></i><i></i><i></i></div>
+              <strong>Full Stage 3</strong>
+            </div>
+            <div class="bar-group">
+              <div class="bar-value">97.2</div>
+              <div class="bar-track"><div class="bar bar-secondary" style="--bar-height: 72%"></div></div>
+              <div class="branch-dots"><i></i><i class="off"></i><i></i></div>
+              <strong>w/o imagined future</strong>
+            </div>
+            <div class="bar-group">
+              <div class="bar-value">96.0</div>
+              <div class="bar-track"><div class="bar bar-tertiary" style="--bar-height: 60%"></div></div>
+              <div class="branch-dots"><i></i><i></i><i class="off"></i></div>
+              <strong>w/o action proposal</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="citation" class="section citation-section">
+        <div class="section-shell citation-grid">
+          <div class="section-heading light-heading">
+            <p class="eyebrow">Citation</p>
+            <h2>Build on omega-EVA.</h2>
+            <p>
+              Code and dataset releases are being prepared. The paper is publicly available on arXiv.
+            </p>
+            <a class="text-link" href="https://arxiv.org/abs/2606.09457" target="_blank" rel="noreferrer">
+              Read the paper <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+          <div class="code-block">
+            <button class="copy-button" type="button" data-copy-button>Copy BibTeX</button>
+            <pre id="bibtex"><code>@article{sun2026omegaeva,
+  title   = {$\omega$-EVA: Envision, Verify, and Act
+             with Latent Interactive World Models},
+  author  = {Sun, Zhenguo and Sun, Yu and
+             Huang, Hande and Knoll, Alois},
+  journal = {arXiv preprint arXiv:2606.09457},
+  year    = {2026}
+}</code></pre>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="section-shell footer-grid">
+        <div>
+          <a class="wordmark footer-wordmark" href="#top">
+            <span class="wordmark-symbol" aria-hidden="true">ω</span>
+            <span>omega-EVA</span>
+          </a>
+          <p>Envision consequences. Verify proposals. Act with feedback.</p>
+        </div>
+        <div class="footer-meta">
+          <p>Zhenguo Sun · Yu Sun · Hande Huang · Alois Knoll</p>
+          <p>XYZ Embodied AI · Technical University of Munich</p>
+          <p>arXiv preprint, June 2026</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
