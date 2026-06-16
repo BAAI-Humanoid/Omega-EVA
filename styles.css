@@ -267,6 +267,18 @@ a {
   opacity: 0.78;
 }
 
+.button-live {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.button-live:hover,
+.button-live:focus-visible {
+  color: var(--blue);
+  border-color: rgba(8, 127, 245, 0.42);
+  box-shadow: 0 12px 28px rgba(8, 127, 245, 0.12);
+}
+
 .button-icon {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
@@ -283,7 +295,8 @@ a {
 .affiliations {
   display: flex;
   align-items: center;
-  gap: 1.4rem;
+  flex-wrap: wrap;
+  gap: 1.15rem;
   margin-top: 2.4rem;
 }
 
@@ -294,30 +307,28 @@ a {
 }
 
 .affiliation-xyz {
-  width: 168px;
+  width: 154px;
   overflow: hidden;
 }
 
 .affiliation-xyz img {
-  width: 168px;
+  width: 154px;
   height: auto;
 }
 
-.affiliation-tum {
-  gap: 0.7rem;
+.affiliation-logo {
   padding-left: 1.35rem;
-  color: #53637c;
   border-left: 1px solid #bdd0e4;
-  font-size: 0.68rem;
-  font-weight: 650;
-  line-height: 1.25;
 }
 
-.tum-mark {
-  color: #3070b3;
-  font-size: 1.35rem;
-  font-weight: 900;
-  letter-spacing: -0.08em;
+.affiliation-logo img {
+  width: auto;
+  height: 34px;
+  object-fit: contain;
+}
+
+.affiliation-baai img {
+  height: 42px;
 }
 
 .hero-visual {
@@ -1268,7 +1279,7 @@ tbody tr:last-child td {
     gap: 0.9rem;
   }
 
-  .affiliation-tum {
+  .affiliation-logo {
     padding-top: 0.9rem;
     padding-left: 0;
     border-top: 1px solid #bdd0e4;

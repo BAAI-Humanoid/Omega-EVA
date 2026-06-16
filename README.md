@@ -34,8 +34,9 @@ All site resources use relative paths, so the page works both at a user site
 
 ## Updating release links
 
-The Paper button already points to the arXiv page. Code and Dataset are disabled
-buttons in `index.html`. When those resources are released, replace each
+The Paper button points to the arXiv page, and the Code button points to
+`https://github.com/BAAI-Humanoid/Omega-EVA`. Dataset is still a disabled
+`Coming Soon` button in `index.html`. When the dataset is released, replace that
 `<button disabled>` with an `<a href="...">` using the same `button` classes and
 remove the `Coming Soon` status text.
 
