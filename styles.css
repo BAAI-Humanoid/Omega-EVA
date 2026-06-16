@@ -340,6 +340,11 @@ a {
   max-height: 34px !important;
 }
 
+.affiliation-baai {
+  padding-left: 1.35rem !important;
+  border-left: 1px solid #bdd0e4 !important;
+}
+
 .brand-logo-baai {
   height: 42px;
 }
@@ -1297,6 +1302,12 @@ tbody tr:last-child td {
     padding-left: 0;
     border-top: 1px solid #bdd0e4;
     border-left: 0;
+  }
+
+  .affiliation-baai {
+    padding-left: 0 !important;
+    border-top: 1px solid #bdd0e4 !important;
+    border-left: 0 !important;
   }
 
   .loop-ring {
