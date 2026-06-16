@@ -317,17 +317,30 @@ a {
 }
 
 .affiliation-logo {
+  width: auto;
+  max-width: 150px;
+  overflow: hidden;
   padding-left: 1.35rem;
   border-left: 1px solid #bdd0e4;
 }
 
-.affiliation-logo img {
+.brand-logo {
+  display: block;
   width: auto;
   height: 34px;
+  max-width: 150px;
+  max-height: 42px;
   object-fit: contain;
 }
 
-.affiliation-baai img {
+.brand-logo-tum {
+  width: 66px !important;
+  height: 34px !important;
+  max-width: 66px !important;
+  max-height: 34px !important;
+}
+
+.brand-logo-baai {
   height: 42px;
 }
 
